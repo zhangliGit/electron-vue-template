@@ -1,24 +1,30 @@
 <template>
   <a-config-provider :locale="locale">
-    <a-modal
-      title="发现新版本"
-      :maskClosable="false"
-      :closable="false"
-      v-model="versionTag"
-      @ok="downApp"
-      okText="更新"
-      cancelText="下次再说"
-    >
-      <p>1. 整体用户体验优化</p>
-      <p>2. 修改已知bug</p>
-      <p>3. 新增版本更新记录功能</p>
-    </a-modal>
-    <a-modal :footer="null" :closable="false" title="新版本下载中, 请稍等..." :maskClosable="false" v-model="updateTag">
-      <div class="qui-fx-jc">
-        <a-progress type="circle" :percent="percent" />
-      </div>
-    </a-modal>
     <a-layout class="basic-layout qui-page qui-fx-ver">
+      <a-modal
+        title="发现新版本"
+        :maskClosable="false"
+        :closable="false"
+        v-model="versionTag"
+        @ok="downApp"
+        okText="更新"
+        cancelText="下次再说"
+      >
+        <p>1. 整体用户体验优化</p>
+        <p>2. 修改已知bug</p>
+        <p>3. 新增版本更新记录功能</p>
+      </a-modal>
+      <a-modal
+        :footer="null"
+        :closable="false"
+        title="新版本下载中, 请稍等..."
+        :maskClosable="false"
+        v-model="updateTag"
+      >
+        <div class="qui-fx-jc">
+          <a-progress type="circle" :percent="percent" />
+        </div>
+      </a-modal>
       <a-layout-header class="basic-layout-header">
         <basic-header />
       </a-layout-header>
@@ -48,7 +54,7 @@ export default {
     return {
       updateTag: false,
       versionTag: false,
-      percent: '',
+      percent: 0,
       locale: zhCN,
       refresh: false,
       keepAliveExcludeList: []
@@ -64,7 +70,7 @@ export default {
     Offline
   },
   created() {
-    ipcRenderer.send('checkForUpdate')
+    // ipcRenderer.send('checkForUpdate')
     ipcRenderer.on('message', (event, text) => {
       if (text === '检测到新版本，正在下载……') {
       }

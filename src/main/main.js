@@ -16,9 +16,16 @@ if (process.env.NODE_ENV === 'production') {
 }
 let mainWindow = null
 
-protocol.registerSchemesAsPrivileged([{ scheme: ACHEME, privileges: { secure: true, standard: true } }])
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: ACHEME,
+    privileges: {
+      secure: true,
+      standard: true
+    }
+  }
+])
 const previewIcon = process.env.NODE_ENV === 'development' ? 'public/images/tray.ico' : `${global.__images}/tray.ico`
-
 // 应用更新
 /* eslint-disable */
 !(function updateHandle() {
@@ -70,6 +77,7 @@ const previewIcon = process.env.NODE_ENV === 'development' ? 'public/images/tray
 function sendUpdateMessage(text) {
   mainWindow.webContents.send('message', text)
 }
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
@@ -85,7 +93,7 @@ function createWindow() {
       nodeIntegrationInWorker: true,
       webSecurity: false,
       navigateOnDragDrop: true,
-      devTools: false
+      devTools: true
     }
   })
   // 设置appId才能使用Notification
@@ -115,7 +123,12 @@ function createWindow() {
     mainWindow.show()
     // 设置任务栏操作和缩略图
     if (process.platform === 'win32') {
-      mainWindow.setThumbnailClip({ x: 0, y: 0, width: 180, height: 50 })
+      mainWindow.setThumbnailClip({
+        x: 0,
+        y: 0,
+        width: 180,
+        height: 50
+      })
     }
     global.lyricWindow = createLyricWindow(BrowserWindow)
     global.miniWindow = createMiniWindow(BrowserWindow)

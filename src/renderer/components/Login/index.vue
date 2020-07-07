@@ -6,12 +6,15 @@
     :width="320"
     wrapClassName="login"
     centered
-    :maskStyle="{backgroundColor: 'rgba(0, 0, 0, 0.1)'}"
+    :maskStyle="{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }"
   >
     <a-form id="login" :form="form" @submit="handleSubmit">
       <a-form-item>
         <a-input
-          v-decorator="['phone',{rules: [{ required: true, pattern: /^1[3|4|5|7|8][0-9]{9}$/, message: '格式错误!' }]}]"
+          v-decorator="[
+            'phone',
+            { rules: [{ required: true, pattern: /^1[3|4|5|7|8][0-9]{9}$/, message: '格式错误!' }] }
+          ]"
           placeholder="用户名"
         >
           <a-icon slot="prefix" type="user" style="color: rgba(0,0,0,.25)" />
@@ -19,7 +22,7 @@
       </a-form-item>
       <a-form-item>
         <a-input
-          v-decorator="['password',{rules: [{ required: true, message: '密码不能为空!' }]}]"
+          v-decorator="['password', { rules: [{ required: true, message: '密码不能为空!' }] }]"
           type="password"
           placeholder="密码"
         >
@@ -35,11 +38,10 @@
 
 <script>
 import { mapState } from 'vuex'
-import { login_cellphone, user_detail } from '@/api/user'
 import eventBus from '@/utils/eventBus'
 import { setTimeout } from 'timers'
 export default {
-  data () {
+  data() {
     return {
       loading: false
     }
@@ -47,26 +49,26 @@ export default {
   computed: {
     ...mapState('App', ['redirect']),
     showLogin: {
-      get () {
+      get() {
         return this.$store.state.User.showLogin
       },
-      set (value) {
+      set(value) {
         this.$store.commit('User/SET_SHOW_LOGIN', value)
       }
     }
   },
   watch: {
-    showLogin (newVal) {
+    showLogin(newVal) {
       if (newVal) {
         this.loading = false
       }
     }
   },
-  beforeCreate () {
+  beforeCreate() {
     this.form = this.$form.createForm(this)
   },
   methods: {
-    handleSubmit (e) {
+    handleSubmit(e) {
       e.preventDefault()
       this.loading = true
       this.form.validateFields(async (err, values) => {
@@ -110,8 +112,7 @@ export default {
 }
 .login .ant-modal-content {
   min-height: 400px;
-  background: #f8f8f8 url("./../../assets/images/loginBg.jpg") top
-    center/contain no-repeat!important;
+  background: #f8f8f8 url('./../../assets/images/loginBg.jpg') top center/contain no-repeat !important;
 }
 
 #login {

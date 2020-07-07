@@ -28,6 +28,7 @@
     "electron-updater": "^4.3.1",
     "js-base64": "^2.5.1",
     "loadsh": "0.0.4",
+    "lodash.isequal": "^4.5.0",
     "music-metadata": "^6.0.1",
     "nedb": "^1.8.0",
     "request-progress": "^3.0.0",
