@@ -8,52 +8,69 @@ import createLyricWindow from './windows/desktopLyricWindow'
 import createMiniWindow from './windows/miniWindow'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import { ACHEME, LOAD_URL } from './config'
-
+import { autoUpdater } from 'electron-updater'
 const isDevelopment = process.env.NODE_ENV !== 'production'
-if ( process.env.NODE_ENV === 'production' ) {
+if (process.env.NODE_ENV === 'production') {
   global.__img = path.join(__dirname, './img')
   global.__images = path.join(__dirname, './images')
 }
 let mainWindow = null
 
-protocol.registerSchemesAsPrivileged([
-  { scheme: ACHEME, privileges: { secure: true, standard: true } }
-])
+protocol.registerSchemesAsPrivileged([{ scheme: ACHEME, privileges: { secure: true, standard: true } }])
 const previewIcon = process.env.NODE_ENV === 'development' ? 'public/images/tray.ico' : `${global.__images}/tray.ico`
-const prevIcon = process.env.NODE_ENV === 'development' ? 'public/images/prev.png' : `${global.__images}/prev.png`
-const nextIcon = process.env.NODE_ENV === 'development' ? 'public/images/next.png' : `${global.__images}/next.png`
-const playIcon = process.env.NODE_ENV === 'development' ? 'public/images/play.png' : `${global.__images}/play.png`
-const pauseIcon = process.env.NODE_ENV === 'development' ? 'public/images/pause.png' : `${global.__images}/pause.png`
-// 设置底部任务栏按钮和缩略图
-const setThumbarButtons = function (mainWindow, playing) {
-  mainWindow.setThumbarButtons([
-    {
-      tooltip: '上一曲',
-      icon: prevIcon,
-      click () {
-        mainWindow.webContents.send('prev-play')
-      }
-    },
-    {
-      tooltip: playing ? '暂停' : '播放',
-      icon: playing ? pauseIcon : playIcon,
-      click () {
-        mainWindow.webContents.send('toggle-play', {
-          value: !playing
-        })
-      }
-    },
-    {
-      tooltip: '下一曲',
-      icon: nextIcon,
-      click () {
-        mainWindow.webContents.send('next-play')
-      }
-    }
-  ])
-}
 
-function createWindow () {
+// 应用更新
+/* eslint-disable */
+!(function updateHandle() {
+  let message = {
+    error: '检查更新出错',
+    checking: '正在检查更新……',
+    updateAva: '检测到新版本，正在下载……',
+    updateNotAva: '现在使用的就是最新版本，不用更新'
+  }
+  const uploadUrl = 'http://192.168.2.247:10031/download/' // 下载地址，不加后面的**.exe
+  autoUpdater.setFeedURL(uploadUrl)
+  autoUpdater.on('error', function(error) {
+    sendUpdateMessage(message.error)
+  })
+  autoUpdater.on('checking-for-update', function() {
+    sendUpdateMessage(message.checking)
+  })
+  autoUpdater.on('update-available', function(info) {
+    sendUpdateMessage(message.updateAva)
+  })
+  autoUpdater.on('update-not-available', function(info) {
+    sendUpdateMessage(message.updateNotAva)
+  })
+
+  // 更新下载进度事件
+  autoUpdater.on('download-progress', function(progressObj) {
+    mainWindow.webContents.send('downloadProgress', progressObj)
+  })
+  autoUpdater.on('update-downloaded', function(
+    event,
+    releaseNotes,
+    releaseName,
+    releaseDate,
+    updateUrl,
+    quitAndUpdate
+  ) {
+    ipcMain.on('isUpdateNow', (e, arg) => {
+      autoUpdater.quitAndInstall()
+    })
+    mainWindow.webContents.send('isUpdateNow')
+  })
+
+  ipcMain.on('checkForUpdate', () => {
+    //执行自动更新检查
+    autoUpdater.checkForUpdates()
+  })
+})()
+// 通过main进程发送事件给renderer进程，提示更新信息
+function sendUpdateMessage(text) {
+  mainWindow.webContents.send('message', text)
+}
+function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 690,
@@ -68,24 +85,24 @@ function createWindow () {
       nodeIntegrationInWorker: true,
       webSecurity: false,
       navigateOnDragDrop: true,
-      devTools: true
+      devTools: false
     }
   })
   // 设置appId才能使用Notification
-  if ( process.platform === 'win32' ) {
+  if (process.platform === 'win32') {
     app.setAppUserModelId(pkg.appId)
   }
   // 去除原生顶部菜单栏
   mainWindow.setMenu(null)
 
-  if ( process.env.WEBPACK_DEV_SERVER_URL ) {
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
     mainWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
   } else {
     createProtocol(ACHEME)
     mainWindow.loadURL(LOAD_URL)
   }
 
-  mainWindow.on('close', (event) => {
+  mainWindow.on('close', event => {
     event.preventDefault()
     mainWindow.webContents.send('will-close')
   })
@@ -97,18 +114,17 @@ function createWindow () {
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()
     // 设置任务栏操作和缩略图
-    if ( process.platform === 'win32' ) {
-      setThumbarButtons(mainWindow, false)
+    if (process.platform === 'win32') {
       mainWindow.setThumbnailClip({ x: 0, y: 0, width: 180, height: 50 })
     }
     global.lyricWindow = createLyricWindow(BrowserWindow)
     global.miniWindow = createMiniWindow(BrowserWindow)
   })
 
-  if ( isDevelopment ) {
+  if (isDevelopment) {
     // 安装vue-devtools
-    let extensions = BrowserWindow.getDevToolsExtensions()
-    if ( !extensions[ 'Vue.js devtools' ] ) {
+    const extensions = BrowserWindow.getDevToolsExtensions()
+    if (!extensions['Vue.js devtools']) {
       BrowserWindow.addDevToolsExtension(path.resolve(__dirname, './../../src/main/vue-devtools'))
     }
     // 打开调试窗口
@@ -120,21 +136,21 @@ function createWindow () {
   // 初始化进程之间事件监听
   initIpcEvent()
   // 如果是windows系统模拟托盘菜单
-  if ( process.platform === 'win32' ) {
+  if (process.platform === 'win32') {
     global.tray = createTray(Tray)
-    let trayBounds = global.tray.getBounds()
+    const trayBounds = global.tray.getBounds()
     global.trayWindow = createTrayWindow(BrowserWindow, trayBounds)
   }
 }
 
 app.on('window-all-closed', () => {
-  if ( process.platform !== 'darwin' ) {
+  if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
 app.on('activate', () => {
-  if ( global.mainWindow === null || mainWindow === null ) {
+  if (global.mainWindow === null || mainWindow === null) {
     createWindow()
   }
 })
@@ -143,26 +159,17 @@ app.on('ready', () => {
   global.execPath = process.execPath
   global.argv = process.argv
   createWindow()
-  // protocalHandler()
-  ipcMain.on('thumbar-buttons', (e, data) => {
-    if ( global.mainWindow === null || mainWindow === null ) return
-    if ( process.platform === 'win32' ) {
-      let { playing } = data
-      setThumbarButtons(mainWindow, playing)
-    }
-  })
 })
-
 app.on('quit', () => {
-  if ( global.downloadFile ) {
+  if (global.downloadFile) {
     shell.openItem(global.downloadFile)
   }
 })
 
-if ( isDevelopment ) {
-  if ( process.platform === 'win32' ) {
+if (isDevelopment) {
+  if (process.platform === 'win32') {
     process.on('message', data => {
-      if ( data === 'graceful-exit' ) {
+      if (data === 'graceful-exit') {
         app.quit()
       }
     })

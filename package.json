@@ -25,6 +25,7 @@
     "draggabilly": "^2.2.0",
     "electron": "^6.1.12",
     "electron-dl": "^2.0.0",
+    "electron-updater": "^4.3.1",
     "js-base64": "^2.5.1",
     "loadsh": "0.0.4",
     "music-metadata": "^6.0.1",

@@ -1,12 +1,10 @@
 import { LOAD_URL } from './../config'
-const miniWinURL = process.env.NODE_ENV === 'development'
-  ? `http://localhost:9080/#update`
-  : `${LOAD_URL}#update`
+const miniWinURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080/#update` : `${LOAD_URL}#update`
 const previewIcon = process.env.NODE_ENV === 'development' ? '/images/tray.ico' : `${global.__images}/images/tray.ico`
 let updateWindow
-const createUpdateWindow = function (BrowserWindow) {
+const createUpdateWindow = function(BrowserWindow) {
   if (updateWindow) return false
-  let obj = {
+  const obj = {
     icon: previewIcon,
     height: 420,
     minHeight: 420,
