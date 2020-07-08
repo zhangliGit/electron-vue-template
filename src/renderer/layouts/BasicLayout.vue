@@ -22,6 +22,7 @@
         v-model="updateTag"
       >
         <div class="qui-fx-jc">
+          {{ percent }}
           <a-progress type="circle" :percent="percent" />
         </div>
       </a-modal>
@@ -43,7 +44,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import { ipcRenderer } from 'electron'
 import BasicHeader from '@/components/BasicHeader'
 import Login from '@/components/Login'
@@ -54,15 +55,14 @@ export default {
     return {
       updateTag: false,
       versionTag: false,
-      percent: 0,
+      percent: 2,
       locale: zhCN,
       refresh: false,
       keepAliveExcludeList: []
     }
   },
   computed: {
-    ...mapGetters('App', ['isOnliline']),
-    ...mapState('App', ['noLimitRoutes'])
+    ...mapGetters('App', ['isOnliline'])
   },
   components: {
     BasicHeader,
@@ -70,21 +70,26 @@ export default {
     Offline
   },
   created() {
-    // ipcRenderer.send('checkForUpdate')
     ipcRenderer.on('message', (event, text) => {
       if (text === '检测到新版本，正在下载……') {
+        this.updateTag = true
       }
     })
     ipcRenderer.on('downloadProgress', (event, progressObj) => {
-      this.percent = progressObj.percent || 0
+      this.percent = Math.floor(progressObj.percent) || 0
     })
     ipcRenderer.on('isUpdateNow', () => {
+      this.updateTag = false
       this.versionTag = true
+      ipcRenderer.send('isUpdateNow')
     })
   },
   methods: {
+    updateCheck() {
+      this.versionTag = true
+    },
     downApp() {
-      ipcRenderer.send('isUpdateNow')
+      ipcRenderer.send('checkForUpdate')
     }
   }
 }

@@ -159,6 +159,12 @@ module.exports = {
     // vue-cli-plugin-electron-builder配置
     electronBuilder: {
       builderOptions: {
+        publish: [
+          {
+            provider: 'generic',
+            url: 'http://canpointtest.com/download/'
+          }
+        ],
         win: {
           icon: 'build/electron-icon/icon.ico',
           // 图标路径 windows系统中icon需要256*256的ico格式图片，更换应用图标亦在此处

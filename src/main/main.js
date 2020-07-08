@@ -26,8 +26,8 @@ protocol.registerSchemesAsPrivileged([
   }
 ])
 const previewIcon = process.env.NODE_ENV === 'development' ? 'public/images/tray.ico' : `${global.__images}/tray.ico`
-// 应用更新
-/* eslint-disable */
+// 检测更新，在你想要检查更新的时候执行，renderer事件触发后的操作自行编写
+/*eslint-disable */
 !(function updateHandle() {
   let message = {
     error: '检查更新出错',
@@ -35,7 +35,7 @@ const previewIcon = process.env.NODE_ENV === 'development' ? 'public/images/tray
     updateAva: '检测到新版本，正在下载……',
     updateNotAva: '现在使用的就是最新版本，不用更新'
   }
-  const uploadUrl = 'http://192.168.2.247:10031/download/' // 下载地址，不加后面的**.exe
+  const uploadUrl = 'http://canpointtest.com/download/' // 下载地址，不加后面的**.exe
   autoUpdater.setFeedURL(uploadUrl)
   autoUpdater.on('error', function(error) {
     sendUpdateMessage(message.error)
@@ -65,14 +65,15 @@ const previewIcon = process.env.NODE_ENV === 'development' ? 'public/images/tray
     ipcMain.on('isUpdateNow', (e, arg) => {
       autoUpdater.quitAndInstall()
     })
+
     mainWindow.webContents.send('isUpdateNow')
   })
 
   ipcMain.on('checkForUpdate', () => {
-    //执行自动更新检查
     autoUpdater.checkForUpdates()
   })
 })()
+
 // 通过main进程发送事件给renderer进程，提示更新信息
 function sendUpdateMessage(text) {
   mainWindow.webContents.send('message', text)

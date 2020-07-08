@@ -4,10 +4,10 @@ const state = {
 }
 
 const mutations = {
-  SET_REMOTE_VERSION (state, version) {
+  SET_REMOTE_VERSION(state, version) {
     state.remoteVersion = version
   },
-  SET_UPDATE_CONTENT (state, content) {
+  SET_UPDATE_CONTENT(state, content) {
     state.updateContent = content
   }
 }
