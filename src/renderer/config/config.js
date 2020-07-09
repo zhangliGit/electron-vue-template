@@ -16,6 +16,10 @@ export const KEEP_STATE_KEY = '__KEEP_STATE__'
 
 export const colorList = [
   {
+    key: '极客蓝',
+    color: '#2F54EB'
+  },
+  {
     key: '中国红',
     color: '#c62f2f'
   },
@@ -42,10 +46,6 @@ export const colorList = [
   {
     key: '拂晓蓝',
     color: '#1890FF'
-  },
-  {
-    key: '极客蓝',
-    color: '#2F54EB'
   },
   {
     key: '酱紫',

@@ -1,4 +1,5 @@
 const path = require('path')
+const theme = require('./theme')
 const isProd = process.env.NODE_ENV === 'production'
 
 function resolve(dir) {
@@ -120,11 +121,7 @@ module.exports = {
     // css预设器配置项
     loaderOptions: {
       less: {
-        modifyVars: {
-          'primary-color': '#c62f2f',
-          'link-color': '#c62f2f',
-          'border-radius-base': '4px'
-        },
+        modifyVars: theme,
         javascriptEnabled: true
       }
     },

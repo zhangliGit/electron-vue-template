@@ -58,16 +58,16 @@ export default {
       percent: 2,
       locale: zhCN,
       refresh: false,
-      keepAliveExcludeList: []
+      keepAliveExcludeList: [],
     }
   },
   computed: {
-    ...mapGetters('App', ['isOnliline'])
+    ...mapGetters('App', ['isOnliline']),
   },
   components: {
     BasicHeader,
     Login,
-    Offline
+    Offline,
   },
   created() {
     ipcRenderer.on('message', (event, text) => {
@@ -90,8 +90,8 @@ export default {
     },
     downApp() {
       ipcRenderer.send('checkForUpdate')
-    }
-  }
+    },
+  },
 }
 </script>
 

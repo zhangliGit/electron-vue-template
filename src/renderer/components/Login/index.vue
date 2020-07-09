@@ -14,7 +14,9 @@
 <script>
 export default {
   data() {
-    return {}
+    return {
+      showLogin: false
+    }
   },
   computed: {},
   watch: {},

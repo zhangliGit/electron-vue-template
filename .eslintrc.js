@@ -3,7 +3,8 @@ module.exports = {
   env: {
     node: true
   },
-  extends: ['plugin:vue/strongly-recommended', '@vue/standard'],
+  // extends: ['plugin:vue/strongly-recommended', '@vue/standard'],
+  extends: ['plugin:vue/essential'],
   rules: {
     'generator-star-spacing': 'off',
     'space-before-function-paren': 0,
@@ -51,7 +52,8 @@ module.exports = {
       {
         ignoreReadBeforeAssign: false
       }
-    ]
+    ],
+    'prettier/prettier': 'off'
   },
   parserOptions: {
     parser: 'babel-eslint'

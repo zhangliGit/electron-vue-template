@@ -1,6 +1,7 @@
 <template>
   <div class="home qui-fx-f1">
-    <div class="title">{{ title }}{{ version }}</div>
+    <div class="qui-main-color">{{ title }}{{ version }}</div>
+    <div class="qui-main-bg-color box"></div>
   </div>
 </template>
 
@@ -27,7 +28,11 @@ export default {
 <style lang="less" scoped>
 .home {
   .title {
-    color: @primary-color;
+    background: #fff;
+  }
+  .box {
+    width: 200px;
+    height: 100px;
   }
 }
 </style>
